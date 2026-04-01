@@ -2,12 +2,12 @@
   "nodes": [
     {
       "id": "node-0",
-      "position": { "x": 0, "y": 100 },
+      "position": { "x": -204.4356548991629, "y": 84.85661815561755 },
       "data": { "nodeType": "Start Node", "label": "Start Node" }
     },
     {
       "id": "node-1",
-      "position": { "x": 400, "y": 100 },
+      "position": { "x": 453.63281069885454, "y": -63.42232907062716 },
       "data": {
         "nodeType": "CORS Headers",
         "label": "CORS Headers",
@@ -21,7 +21,7 @@
     },
     {
       "id": "node-4",
-      "position": { "x": 800, "y": 100 },
+      "position": { "x": 770.975184798267, "y": -59.005509366015595 },
       "data": {
         "nodeType": "Request Fetch - AWS Identity Auth",
         "label": "Request Fetch",
@@ -38,19 +38,72 @@
           "signPayload": true
         }
       }
+    },
+    {
+      "id": "node-2",
+      "position": { "x": 791.5545358395623, "y": 192.11897238045714 },
+      "data": {
+        "nodeType": "Request Fetch - Azure Entra ID",
+        "label": "Microsoft Graph",
+        "tenantId": ["const", "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"],
+        "clientId": ["const", "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"],
+        "clientSecret": ["const", "client-secret-value"],
+        "scope": ["const", "https://graph.microsoft.com/.default"]
+      }
+    },
+    {
+      "id": "node-3",
+      "position": { "x": 138.03046107553666, "y": 66.4139031458966 },
+      "data": {
+        "label": "Conditional Router - 2 outputs",
+        "nodeType": "Conditional Router - 2 outputs",
+        "output-1": { "condition": ["const", true] }
+      }
+    },
+    {
+      "id": "node-5",
+      "position": { "x": 477.6113468336562, "y": 190.35905099066687 },
+      "data": {
+        "nodeType": "CORS Headers",
+        "label": "CORS Headers",
+        "allowOrigin": ["string.replace", "test", ["regexp", "^(a)*$"], "test"],
+        "allowMethods": ["const", ["GET", "POST", "PUT", "DELETE", "OPTIONS"]],
+        "allowHeaders": ["const", "Content-Type, Authorization"],
+        "allowCredentials": ["const", "true"],
+        "exposeHeaders": ["const", "X-Custom-Header"],
+        "maxAge": ["const", "3600"]
+      }
     }
   ],
   "edges": [
     {
-      "id": "edge-1",
-      "source": "node-0",
-      "target": "node-1",
-      "sourceHandle": "default"
-    },
-    {
       "id": "edge-2",
       "source": "node-1",
       "target": "node-4",
+      "sourceHandle": "default"
+    },
+    {
+      "id": "edge-1",
+      "source": "node-0",
+      "target": "node-3",
+      "sourceHandle": "default"
+    },
+    {
+      "id": "edge-3",
+      "source": "node-3",
+      "target": "node-1",
+      "sourceHandle": "output-1"
+    },
+    {
+      "id": "edge-4",
+      "source": "node-3",
+      "target": "node-5",
+      "sourceHandle": "fallback"
+    },
+    {
+      "id": "edge-5",
+      "source": "node-5",
+      "target": "node-2",
       "sourceHandle": "default"
     }
   ]
