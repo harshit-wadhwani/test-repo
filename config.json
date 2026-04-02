@@ -2,108 +2,101 @@
   "nodes": [
     {
       "id": "node-0",
-      "position": { "x": -204.4356548991629, "y": 84.85661815561755 },
+      "position": { "x": -282.8792848459927, "y": 134.0139083202662 },
       "data": { "nodeType": "Start Node", "label": "Start Node" }
     },
     {
-      "id": "node-1",
-      "position": { "x": 453.63281069885454, "y": -63.42232907062716 },
+      "id": "node-6",
+      "position": { "x": -33.578658163439854, "y": 134.52764671823263 },
       "data": {
-        "nodeType": "CORS Headers",
-        "label": "CORS Headers",
-        "allowOrigin": ["string.replace", "test", ["regexp", "^(a)*$"], "test"],
-        "allowMethods": ["const", ["GET", "POST", "PUT", "DELETE", "OPTIONS"]],
-        "allowHeaders": ["const", "Content-Type, Authorization"],
-        "allowCredentials": ["const", "true"],
-        "exposeHeaders": ["const", "X-Custom-Header"],
-        "maxAge": ["const", "3600"]
+        "label": "Verify reCAPTCHA",
+        "nodeType": "reCAPTCHA Validator",
+        "responseToken": [
+          "array.at",
+          [
+            "object.get",
+            ["context", "request.headers"],
+            ["const", "X-recaptcha-Token"]
+          ],
+          0
+        ],
+        "secret": ["secret", "string", "RECAPTCHA_SECRET"],
+        "remoteip": ["context", "request.ip"]
       }
     },
     {
-      "id": "node-4",
-      "position": { "x": 770.975184798267, "y": -59.005509366015595 },
+      "id": "node-1",
+      "position": { "x": 422.270198481231, "y": 133.82552060326896 },
       "data": {
-        "nodeType": "Request Fetch - AWS Identity Auth",
-        "label": "Request Fetch",
-        "hostname": "btbytwm5kdps2wcqew2lvkvn4e0oqabj.lambda-url.us-east-2.on.aws",
-        "pathname": ["context", "request.url.pathname"],
-        "searchParams": ["context", "request.url.searchParams"],
-        "hash": ["context", "request.url.hash"],
-        "headers": ["context", "request.headers"],
-        "auth": {
-          "region": "us-east-2",
-          "service": "lambda",
-          "accessKeyId": ["secret", "string", "AWS_ACCESS_KEY_ID"],
-          "secretAccessKey": ["secret", "string", "AWS_SECRET_ACCESS_KEY"],
-          "signPayload": true
-        }
+        "nodeType": "Headers Modify",
+        "label": "Auth forward",
+        "headers": [
+          "object.merge",
+          ["context", "request.headers"],
+          ["const", { "X-Internal-Token": ["xxx"] }]
+        ]
       }
     },
     {
       "id": "node-2",
-      "position": { "x": 791.5545358395623, "y": 192.11897238045714 },
+      "position": { "x": 206.06359806530543, "y": 134.84990904080783 },
       "data": {
-        "nodeType": "Request Fetch - Azure Entra ID",
-        "label": "Microsoft Graph",
-        "tenantId": ["const", "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"],
-        "clientId": ["const", "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"],
-        "clientSecret": ["const", "client-secret-value"],
-        "scope": ["const", "https://graph.microsoft.com/.default"]
+        "label": "Validate JWT",
+        "nodeType": "JWT Validator",
+        "jwksUri": "https://example.auth0.com/.well-known/jwks.json",
+        "token": [
+          "string.split",
+          [
+            "object.get",
+            ["context", "request.headers"],
+            ["const", "Authorization"]
+          ],
+          ["const", "Bearer (.+)"],
+          1
+        ]
       }
     },
     {
       "id": "node-3",
-      "position": { "x": 138.03046107553666, "y": 66.4139031458966 },
+      "position": { "x": 651.1009775296336, "y": 132.69239712204688 },
       "data": {
-        "label": "Conditional Router - 2 outputs",
-        "nodeType": "Conditional Router - 2 outputs",
-        "output-1": { "condition": ["const", true] }
-      }
-    },
-    {
-      "id": "node-5",
-      "position": { "x": 477.6113468336562, "y": 190.35905099066687 },
-      "data": {
-        "nodeType": "CORS Headers",
-        "label": "CORS Headers",
-        "allowOrigin": ["string.replace", "test", ["regexp", "^(a)*$"], "test"],
-        "allowMethods": ["const", ["GET", "POST", "PUT", "DELETE", "OPTIONS"]],
-        "allowHeaders": ["const", "Content-Type, Authorization"],
-        "allowCredentials": ["const", "true"],
-        "exposeHeaders": ["const", "X-Custom-Header"],
-        "maxAge": ["const", "3600"]
+        "nodeType": "Request Fetch - Google Cloud IAM",
+        "label": "GCP API",
+        "serviceAccountEmail": [
+          "const",
+          "my-sa@my-project.iam.gserviceaccount.com"
+        ],
+        "privateKeyPem": [
+          "const",
+          "-----BEGIN PRIVATE KEY-----\n...\n-----END PRIVATE KEY-----"
+        ],
+        "scope": ["const", "https://www.googleapis.com/auth/cloud-platform"]
       }
     }
   ],
   "edges": [
     {
-      "id": "edge-2",
-      "source": "node-1",
-      "target": "node-4",
+      "id": "edge-1",
+      "source": "node-0",
+      "target": "node-6",
       "sourceHandle": "default"
     },
     {
-      "id": "edge-1",
-      "source": "node-0",
-      "target": "node-3",
+      "id": "edge-2",
+      "source": "node-6",
+      "target": "node-2",
       "sourceHandle": "default"
     },
     {
       "id": "edge-3",
-      "source": "node-3",
+      "source": "node-2",
       "target": "node-1",
-      "sourceHandle": "output-1"
+      "sourceHandle": "default"
     },
     {
       "id": "edge-4",
-      "source": "node-3",
-      "target": "node-5",
-      "sourceHandle": "fallback"
-    },
-    {
-      "id": "edge-5",
-      "source": "node-5",
-      "target": "node-2",
+      "source": "node-1",
+      "target": "node-3",
       "sourceHandle": "default"
     }
   ]
