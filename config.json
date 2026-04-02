@@ -2,30 +2,28 @@
   "nodes": [
     {
       "id": "node-0",
-      "position": { "x": -204.4356548991629, "y": 84.85661815561755 },
+      "position": { "x": -164.7164680417647, "y": 101.12819498658743 },
       "data": { "nodeType": "Start Node", "label": "Start Node" }
     },
     {
       "id": "node-1",
-      "position": { "x": 453.63281069885454, "y": -63.42232907062716 },
+      "position": { "x": 696.2992170242885, "y": -111.19194976472502 },
       "data": {
-        "nodeType": "CORS Headers",
-        "label": "CORS Headers",
-        "allowOrigin": ["string.replace", "test", ["regexp", "^(a)*$"], "test"],
-        "allowMethods": ["const", ["GET", "POST", "PUT", "DELETE", "OPTIONS"]],
-        "allowHeaders": ["const", "Content-Type, Authorization"],
-        "allowCredentials": ["const", "true"],
-        "exposeHeaders": ["const", "X-Custom-Header"],
-        "maxAge": ["const", "3600"]
+        "nodeType": "Request Fetch - Azure Entra ID",
+        "label": "Microsoft Graph",
+        "tenantId": ["const", "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"],
+        "clientId": ["const", "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"],
+        "clientSecret": ["const", "client-secret-value"],
+        "scope": ["const", "https://graph.microsoft.com/.default"]
       }
     },
     {
-      "id": "node-4",
-      "position": { "x": 770.975184798267, "y": -59.005509366015595 },
+      "id": "node-2",
+      "position": { "x": 714.0589664229193, "y": 269.70149285608153 },
       "data": {
         "nodeType": "Request Fetch - AWS Identity Auth",
-        "label": "Request Fetch",
-        "hostname": "btbytwm5kdps2wcqew2lvkvn4e0oqabj.lambda-url.us-east-2.on.aws",
+        "label": "Call API Gateway",
+        "hostname": "fadsfdsafdsa.lambda-url.us-east-2.on.aws",
         "pathname": ["context", "request.url.pathname"],
         "searchParams": ["context", "request.url.searchParams"],
         "hash": ["context", "request.url.hash"],
@@ -40,20 +38,8 @@
       }
     },
     {
-      "id": "node-2",
-      "position": { "x": 791.5545358395623, "y": 192.11897238045714 },
-      "data": {
-        "nodeType": "Request Fetch - Azure Entra ID",
-        "label": "Microsoft Graph",
-        "tenantId": ["const", "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"],
-        "clientId": ["const", "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"],
-        "clientSecret": ["const", "client-secret-value"],
-        "scope": ["const", "https://graph.microsoft.com/.default"]
-      }
-    },
-    {
       "id": "node-3",
-      "position": { "x": 138.03046107553666, "y": 66.4139031458966 },
+      "position": { "x": 155.2373738220982, "y": 104.40881611960043 },
       "data": {
         "label": "Conditional Router - 2 outputs",
         "nodeType": "Conditional Router - 2 outputs",
@@ -61,27 +47,33 @@
       }
     },
     {
-      "id": "node-5",
-      "position": { "x": 477.6113468336562, "y": 190.35905099066687 },
+      "id": "node-4",
+      "position": { "x": 431.84229152607134, "y": -109.0265969270332 },
       "data": {
-        "nodeType": "CORS Headers",
-        "label": "CORS Headers",
-        "allowOrigin": ["string.replace", "test", ["regexp", "^(a)*$"], "test"],
-        "allowMethods": ["const", ["GET", "POST", "PUT", "DELETE", "OPTIONS"]],
-        "allowHeaders": ["const", "Content-Type, Authorization"],
-        "allowCredentials": ["const", "true"],
-        "exposeHeaders": ["const", "X-Custom-Header"],
-        "maxAge": ["const", "3600"]
+        "nodeType": "Headers Modify",
+        "label": "Auth forward",
+        "headers": [
+          "object.merge",
+          ["context", "request.headers"],
+          ["const", { "X-Internal-Token": ["xxx"] }]
+        ]
+      }
+    },
+    {
+      "id": "node-5",
+      "position": { "x": 442.784653377651, "y": 269.34483327673246 },
+      "data": {
+        "nodeType": "Headers Modify",
+        "label": "Auth forward",
+        "headers": [
+          "object.merge",
+          ["context", "request.headers"],
+          ["const", { "X-Internal-Token": ["xxx"] }]
+        ]
       }
     }
   ],
   "edges": [
-    {
-      "id": "edge-2",
-      "source": "node-1",
-      "target": "node-4",
-      "sourceHandle": "default"
-    },
     {
       "id": "edge-1",
       "source": "node-0",
@@ -89,10 +81,16 @@
       "sourceHandle": "default"
     },
     {
-      "id": "edge-3",
+      "id": "edge-2",
       "source": "node-3",
-      "target": "node-1",
+      "target": "node-4",
       "sourceHandle": "output-1"
+    },
+    {
+      "id": "edge-3",
+      "source": "node-4",
+      "target": "node-1",
+      "sourceHandle": "default"
     },
     {
       "id": "edge-4",
